@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import Session
+# from sqlalchemy.orm import Session
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
 
 def main():
     engine = create_engine("sqlite+pysqlite:///:memory:", echo=True)
@@ -25,7 +26,28 @@ def main():
     #     result = session.execute(stmt, {"y": 1})
     #     for id, name in result:
     #         print(f"id: {id} name: {name}")
+    
+    metadata_obj = MetaData()
 
+    user_table = Table(
+        "user_account",
+        metadata_obj,
+        Column("id", Integer, primary_key=True),
+        Column("name", String(30)),
+        Column("fullname", String)
+    )
+
+    address_table = Table(
+        "address",
+        metadata_obj,
+        Column("id", Integer, primary_key=True),
+        Column("user_id", ForeignKey("user_account.id"), nullable=False),
+        Column("email_address", String, nullable=False)
+    )
+
+    metadata_obj.create_all(engine)
+
+    # https://docs.sqlalchemy.org/en/20/tutorial/metadata.html
 
 if __name__ == "__main__":
     main()
